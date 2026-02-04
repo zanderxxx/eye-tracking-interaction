@@ -75,42 +75,28 @@ function checkBrowserCompatibility() {
  * 初始化 WebGazer
  */
 async function initializeWebGazer() {
-    return new Promise((resolve, reject) => {
-        try {
-            console.log('📹 初始化 WebGazer...');
+    try {
+        console.log('📹 初始化 WebGazer...');
 
-            webgazer.setRegression('ridge')
-                .setTracker('TFFacemesh')
-                .setGazeListener((data, timestamp) => {
-                    if (data && isCalibrated) {
-                        handleGazeData(data);
-                    }
-                })
-                .showPredictionPoints(false) // 隐藏预测点
-                .begin();
-
-            // 等待 WebGazer 准备就绪
-            let checkReady = setInterval(() => {
-                if (webgazer.isReady()) {
-                    clearInterval(checkReady);
-                    console.log('✅ WebGazer 准备就绪');
-                    hideLoading();
-                    resolve();
+        // WebGazer 2.0 的 begin() 返回 Promise
+        await webgazer
+            .setRegression('ridge')
+            .setTracker('TFFacemesh')
+            .setGazeListener((data, timestamp) => {
+                if (data && isCalibrated) {
+                    handleGazeData(data);
                 }
-            }, 100);
+            })
+            .showPredictionPoints(false)
+            .begin();
 
-            // 超时处理
-            setTimeout(() => {
-                clearInterval(checkReady);
-                if (!webgazer.isReady()) {
-                    reject(new Error('WebGazer 初始化超时'));
-                }
-            }, 10000);
+        console.log('✅ WebGazer 准备就绪');
+        hideLoading();
 
-        } catch (error) {
-            reject(error);
-        }
-    });
+    } catch (error) {
+        console.error('WebGazer 初始化错误:', error);
+        throw new Error('WebGazer 初始化失败: ' + error.message);
+    }
 }
 
 /**
