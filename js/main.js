@@ -108,6 +108,19 @@ async function initializeWebGazer() {
                     clearInterval(checkReady);
                     console.log('✅ WebGazer 准备就绪');
 
+                    // 确保视频容器可见
+                    setTimeout(() => {
+                        const videoContainer = document.getElementById('webgazerVideoContainer');
+                        if (videoContainer) {
+                            videoContainer.style.display = 'block';
+                            videoContainer.style.position = 'fixed';
+                            videoContainer.style.bottom = '20px';
+                            videoContainer.style.right = '20px';
+                            videoContainer.style.zIndex = '9999';
+                            console.log('📹 摄像头容器已设置可见');
+                        }
+                    }, 100);
+
                     // 等待一小段时间确保完全初始化
                     setTimeout(() => {
                         hideLoading();
@@ -260,6 +273,31 @@ function finishCalibration() {
     console.log('WebGazer 状态检查:');
     console.log('- webgazer 对象:', typeof webgazer);
     console.log('- webgazer.params:', webgazer.params);
+
+    // 检查视频元素
+    setTimeout(() => {
+        const videoFeed = document.getElementById('webgazerVideoFeed');
+        const videoContainer = document.getElementById('webgazerVideoContainer');
+        const videoCanvas = document.getElementById('webgazerVideoCanvas');
+
+        console.log('🎥 视频元素检查:');
+        console.log('- videoFeed:', videoFeed);
+        console.log('- videoContainer:', videoContainer);
+        console.log('- videoCanvas:', videoCanvas);
+
+        if (videoContainer) {
+            videoContainer.style.display = 'block';
+            videoContainer.classList.remove('hidden');
+            console.log('✅ 显示视频容器');
+        } else {
+            console.warn('⚠️ 未找到 webgazerVideoContainer 元素');
+        }
+
+        if (videoFeed) {
+            console.log('- 视频流状态:', videoFeed.srcObject);
+            console.log('- 视频尺寸:', videoFeed.videoWidth, 'x', videoFeed.videoHeight);
+        }
+    }, 1000);
 
     // 确保 WebGazer 处于运行状态
     try {
