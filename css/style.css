@@ -349,6 +349,7 @@ body {
 
 /* ==================== WebGazer 摄像头预览调整 ==================== */
 #webgazerVideoContainer {
+    display: block !important;
     position: fixed !important;
     bottom: 20px !important;
     right: 20px !important;
@@ -357,15 +358,22 @@ body {
     border-radius: 10px !important;
     overflow: hidden !important;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3) !important;
-    z-index: 50 !important;
+    z-index: 99999 !important;
+    border: 3px solid #4ade80 !important;
 }
 
 #webgazerVideoContainer.hidden {
-    display: none !important;
+    display: block !important; /* 覆盖隐藏 */
+    opacity: 1 !important;
 }
 
 #webgazerVideoFeed {
     border-radius: 10px !important;
+    display: block !important;
+}
+
+#webgazerVideoCanvas {
+    display: block !important;
 }
 
 /* 隐藏 WebGazer 的默认预测点 */

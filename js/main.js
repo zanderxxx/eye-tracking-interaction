@@ -96,6 +96,29 @@ async function initializeWebGazer() {
             // 启动 WebGazer
             webgazer.begin();
 
+            // 立即检查并保持视频元素引用
+            let videoCheckInterval = setInterval(() => {
+                const videoContainer = document.getElementById('webgazerVideoContainer');
+                if (videoContainer) {
+                    clearInterval(videoCheckInterval);
+                    console.log('✅ 找到视频容器');
+
+                    // 强制显示
+                    videoContainer.style.display = 'block !important';
+                    videoContainer.style.visibility = 'visible';
+                    videoContainer.style.position = 'fixed';
+                    videoContainer.style.bottom = '20px';
+                    videoContainer.style.right = '20px';
+                    videoContainer.style.width = '240px';
+                    videoContainer.style.height = '180px';
+                    videoContainer.style.zIndex = '99999';
+                    videoContainer.style.border = '2px solid white';
+
+                    // 防止被隐藏
+                    videoContainer.classList.remove('hidden');
+                }
+            }, 100);
+
             // 等待摄像头和模型加载
             let attempts = 0;
             const maxAttempts = 50; // 10秒超时 (50 * 200ms)
