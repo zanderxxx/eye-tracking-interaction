@@ -78,8 +78,11 @@ async function initializeWebGazer() {
     try {
         console.log('📹 初始化 WebGazer...');
 
-        // 配置 WebGazer
-        webgazer
+        // 启动 WebGazer - begin() 返回 Promise
+        console.log('🔄 调用 webgazer.begin()...');
+
+        // 直接使用 begin() 的链式调用
+        await webgazer
             .setRegression('ridge')
             .setTracker('TFFacemesh')
             .setGazeListener((data, timestamp) => {
@@ -88,38 +91,18 @@ async function initializeWebGazer() {
                     handleGazeData(data);
                 }
             })
-            .showPredictionPoints(false);
+            .showPredictionPoints(false)
+            .begin();
 
-        // 启动 WebGazer - begin() 返回 Promise
-        console.log('🔄 调用 webgazer.begin()...');
-        await webgazer.begin();
         console.log('✅ webgazer.begin() 完成');
 
-        // 等待视频容器创建
-        console.log('⏳ 等待视频容器创建...');
-        const videoContainer = await waitForVideoContainer(10000); // 10秒超时
+        // WebGazer 2.0 不会自动创建视频预览
+        // 我们不依赖视频预览，直接使用眼动数据
+        console.log('ℹ️ WebGazer 2.0 默认不显示视频预览');
+        console.log('ℹ️ 眼动追踪将在后台运行');
 
-        if (videoContainer) {
-            console.log('✅ 视频容器已创建');
-
-            // 强制显示
-            videoContainer.style.display = 'block';
-            videoContainer.style.visibility = 'visible';
-            videoContainer.style.position = 'fixed';
-            videoContainer.style.bottom = '20px';
-            videoContainer.style.right = '20px';
-            videoContainer.style.width = '240px';
-            videoContainer.style.height = '180px';
-            videoContainer.style.zIndex = '99999';
-            videoContainer.style.border = '3px solid #4ade80';
-
-            console.log('📹 视频容器样式已设置');
-        } else {
-            throw new Error('视频容器创建超时');
-        }
-
-        // 再等待一下确保完全初始化
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // 等待一下确保完全初始化
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
         hideLoading();
         console.log('✅ WebGazer 完全初始化完成');
@@ -128,32 +111,6 @@ async function initializeWebGazer() {
         console.error('WebGazer 初始化错误:', error);
         throw new Error('WebGazer 初始化失败: ' + error.message);
     }
-}
-
-/**
- * 等待视频容器元素创建
- */
-function waitForVideoContainer(timeout = 10000) {
-    return new Promise((resolve, reject) => {
-        const startTime = Date.now();
-
-        const checkInterval = setInterval(() => {
-            const container = document.getElementById('webgazerVideoContainer');
-
-            if (container) {
-                clearInterval(checkInterval);
-                resolve(container);
-                return;
-            }
-
-            // 超时检查
-            if (Date.now() - startTime > timeout) {
-                clearInterval(checkInterval);
-                console.error('⚠️ 视频容器创建超时');
-                resolve(null);
-            }
-        }, 100);
-    });
 }
 
 /**
@@ -286,31 +243,6 @@ function finishCalibration() {
     console.log('WebGazer 状态检查:');
     console.log('- webgazer 对象:', typeof webgazer);
     console.log('- webgazer.params:', webgazer.params);
-
-    // 检查视频元素
-    setTimeout(() => {
-        const videoFeed = document.getElementById('webgazerVideoFeed');
-        const videoContainer = document.getElementById('webgazerVideoContainer');
-        const videoCanvas = document.getElementById('webgazerVideoCanvas');
-
-        console.log('🎥 视频元素检查:');
-        console.log('- videoFeed:', videoFeed);
-        console.log('- videoContainer:', videoContainer);
-        console.log('- videoCanvas:', videoCanvas);
-
-        if (videoContainer) {
-            videoContainer.style.display = 'block';
-            videoContainer.classList.remove('hidden');
-            console.log('✅ 显示视频容器');
-        } else {
-            console.warn('⚠️ 未找到 webgazerVideoContainer 元素');
-        }
-
-        if (videoFeed) {
-            console.log('- 视频流状态:', videoFeed.srcObject);
-            console.log('- 视频尺寸:', videoFeed.videoWidth, 'x', videoFeed.videoHeight);
-        }
-    }, 1000);
 
     // 确保 WebGazer 处于运行状态
     try {
