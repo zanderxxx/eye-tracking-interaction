@@ -84,8 +84,11 @@ async function initializeWebGazer() {
                 .setRegression('ridge')
                 .setTracker('TFFacemesh')
                 .setGazeListener((data, timestamp) => {
-                    if (data && isCalibrated) {
+                    // 即使未校准也处理数据（用于调试）
+                    if (data) {
                         handleGazeData(data);
+                    } else {
+                        console.log('⚠️ 未接收到注视数据');
                     }
                 })
                 .showPredictionPoints(false);
@@ -133,8 +136,8 @@ async function initializeWebGazer() {
 function handleGazeData(data) {
     const { x, y } = data;
 
-    // 更新眼球控制器
-    if (eyeController) {
+    // 更新眼球控制器（即使未校准也更新，用于测试）
+    if (eyeController && x && y) {
         eyeController.updateGaze(x, y);
     }
 
@@ -224,6 +227,25 @@ function finishCalibration() {
 
     // 显示主界面
     document.getElementById('main-content').classList.remove('hidden');
+
+    // 检查 WebGazer 状态
+    console.log('WebGazer 状态检查:');
+    console.log('- webgazer 对象:', typeof webgazer);
+    console.log('- webgazer.params:', webgazer.params);
+
+    // 强制显示调试信息用于诊断
+    setTimeout(() => {
+        debugVisible = true;
+        const debugInfo = document.getElementById('debug-info');
+        if (debugInfo) {
+            debugInfo.classList.remove('hidden');
+        }
+        const btn = document.getElementById('toggle-debug-btn');
+        if (btn) {
+            btn.textContent = '隐藏调试';
+        }
+        console.log('🐛 调试模式已自动启用');
+    }, 500);
 
     // 提示用户
     showToast('校准完成！现在移动你的眼睛试试看');
