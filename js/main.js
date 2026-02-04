@@ -155,8 +155,39 @@ function showCalibration() {
     calibrationPoints = document.querySelectorAll('.calibration-point');
     currentCalibrationIndex = 0;
 
+    // 绑定校准点点击事件
+    setupCalibrationListeners();
+
     // 显示第一个校准点
     showNextCalibrationPoint();
+}
+
+/**
+ * 设置校准点事件监听
+ */
+function setupCalibrationListeners() {
+    calibrationPoints.forEach((point, index) => {
+        point.addEventListener('click', (e) => {
+            if (point.classList.contains('active')) {
+                // 记录点击位置
+                const rect = point.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+
+                // 通知 WebGazer
+                webgazer.recordScreenPosition(centerX, centerY);
+
+                // 视觉反馈
+                point.classList.add('clicked');
+
+                // 延迟显示下一个点
+                setTimeout(() => {
+                    currentCalibrationIndex++;
+                    showNextCalibrationPoint();
+                }, 400);
+            }
+        });
+    });
 }
 
 /**
@@ -202,30 +233,6 @@ function finishCalibration() {
  * 设置事件监听
  */
 function setupEventListeners() {
-    // 校准点点击事件
-    calibrationPoints.forEach((point, index) => {
-        point.addEventListener('click', (e) => {
-            if (point.classList.contains('active')) {
-                // 记录点击位置
-                const rect = point.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-
-                // 通知 WebGazer
-                webgazer.recordScreenPosition(centerX, centerY);
-
-                // 视觉反馈
-                point.classList.add('clicked');
-
-                // 延迟显示下一个点
-                setTimeout(() => {
-                    currentCalibrationIndex++;
-                    showNextCalibrationPoint();
-                }, 400);
-            }
-        });
-    });
-
     // 跳过校准按钮
     const skipBtn = document.getElementById('skip-calibration');
     if (skipBtn) {
