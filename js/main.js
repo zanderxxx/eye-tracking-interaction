@@ -75,28 +75,56 @@ function checkBrowserCompatibility() {
  * 初始化 WebGazer
  */
 async function initializeWebGazer() {
-    try {
-        console.log('📹 初始化 WebGazer...');
+    return new Promise((resolve, reject) => {
+        try {
+            console.log('📹 初始化 WebGazer...');
 
-        // WebGazer 2.0 的 begin() 返回 Promise
-        await webgazer
-            .setRegression('ridge')
-            .setTracker('TFFacemesh')
-            .setGazeListener((data, timestamp) => {
-                if (data && isCalibrated) {
-                    handleGazeData(data);
+            // 配置 WebGazer
+            webgazer
+                .setRegression('ridge')
+                .setTracker('TFFacemesh')
+                .setGazeListener((data, timestamp) => {
+                    if (data && isCalibrated) {
+                        handleGazeData(data);
+                    }
+                })
+                .showPredictionPoints(false);
+
+            // 启动 WebGazer
+            webgazer.begin();
+
+            // 等待摄像头和模型加载
+            let attempts = 0;
+            const maxAttempts = 50; // 10秒超时 (50 * 200ms)
+
+            const checkReady = setInterval(async () => {
+                attempts++;
+
+                // 检查 WebGazer 是否可用
+                if (webgazer.params && webgazer.params.showVideo !== undefined) {
+                    clearInterval(checkReady);
+                    console.log('✅ WebGazer 准备就绪');
+
+                    // 等待一小段时间确保完全初始化
+                    setTimeout(() => {
+                        hideLoading();
+                        resolve();
+                    }, 500);
+                    return;
                 }
-            })
-            .showPredictionPoints(false)
-            .begin();
 
-        console.log('✅ WebGazer 准备就绪');
-        hideLoading();
+                // 超时处理
+                if (attempts >= maxAttempts) {
+                    clearInterval(checkReady);
+                    reject(new Error('WebGazer 初始化超时。请确保:\n1. 已允许摄像头权限\n2. 使用 Chrome/Firefox/Edge 浏览器\n3. 网络连接正常'));
+                }
+            }, 200);
 
-    } catch (error) {
-        console.error('WebGazer 初始化错误:', error);
-        throw new Error('WebGazer 初始化失败: ' + error.message);
-    }
+        } catch (error) {
+            console.error('WebGazer 初始化错误:', error);
+            reject(new Error('WebGazer 初始化失败: ' + error.message));
+        }
+    });
 }
 
 /**
