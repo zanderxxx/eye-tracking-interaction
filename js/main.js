@@ -148,6 +148,34 @@ function handleGazeData(data) {
 }
 
 /**
+ * 启动预测循环（备用方案）
+ */
+function startPredictionLoop() {
+    console.log('🔄 启动手动预测循环...');
+
+    const pollPrediction = () => {
+        if (!isCalibrated) {
+            // 未校准时不执行
+            requestAnimationFrame(pollPrediction);
+            return;
+        }
+
+        try {
+            const prediction = webgazer.getCurrentPrediction();
+            if (prediction && prediction.x && prediction.y) {
+                handleGazeData(prediction);
+            }
+        } catch (e) {
+            // 忽略错误，继续循环
+        }
+
+        requestAnimationFrame(pollPrediction);
+    };
+
+    pollPrediction();
+}
+
+/**
  * 显示校准界面
  */
 function showCalibration() {
@@ -233,6 +261,17 @@ function finishCalibration() {
     console.log('- webgazer 对象:', typeof webgazer);
     console.log('- webgazer.params:', webgazer.params);
 
+    // 确保 WebGazer 处于运行状态
+    try {
+        webgazer.resume();
+        console.log('✅ WebGazer 预测已启动');
+    } catch (e) {
+        console.warn('resume() 失败:', e);
+    }
+
+    // 启动手动预测循环作为备用方案
+    startPredictionLoop();
+
     // 强制显示调试信息用于诊断
     setTimeout(() => {
         debugVisible = true;
@@ -245,6 +284,19 @@ function finishCalibration() {
             btn.textContent = '隐藏调试';
         }
         console.log('🐛 调试模式已自动启用');
+
+        // 手动测试 gaze listener
+        console.log('🔍 测试 WebGazer 预测功能...');
+        setTimeout(() => {
+            const prediction = webgazer.getCurrentPrediction();
+            console.log('当前预测:', prediction);
+            if (!prediction) {
+                console.warn('⚠️ WebGazer 未返回预测数据，可能原因：');
+                console.warn('  1. 未检测到人脸');
+                console.warn('  2. 摄像头画面不清晰');
+                console.warn('  3. 需要更多校准数据');
+            }
+        }, 2000);
     }, 500);
 
     // 提示用户
