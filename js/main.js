@@ -89,11 +89,6 @@ async function initializeWebGazer() {
                 .showPredictionPoints(false) // 隐藏预测点
                 .begin();
 
-            // 设置视频预览
-            webgazer.showVideoPreview(true)
-                .showFaceOverlay(false)
-                .showFaceFeedbackBox(false);
-
             // 等待 WebGazer 准备就绪
             let checkReady = setInterval(() => {
                 if (webgazer.isReady()) {
