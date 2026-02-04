@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>眼动交互 - Eye Tracking Interaction</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 加载提示 -->
+    <div id="loading" class="loading-container">
+        <div class="loading-spinner"></div>
+        <p>正在初始化摄像头...</p>
+        <p class="loading-hint">请允许浏览器访问您的摄像头</p>
+    </div>
+
+    <!-- 校准界面 -->
+    <div id="calibration" class="calibration-container hidden">
+        <div class="calibration-header">
+            <h2>校准眼球追踪</h2>
+            <p>请依次点击出现的圆点，保持头部稳定</p>
+            <div class="calibration-progress">
+                <span id="calibration-count">0</span> / 9
+            </div>
+        </div>
+        <div class="calibration-grid">
+            <div class="calibration-point" data-index="0"></div>
+            <div class="calibration-point" data-index="1"></div>
+            <div class="calibration-point" data-index="2"></div>
+            <div class="calibration-point" data-index="3"></div>
+            <div class="calibration-point" data-index="4"></div>
+            <div class="calibration-point" data-index="5"></div>
+            <div class="calibration-point" data-index="6"></div>
+            <div class="calibration-point" data-index="7"></div>
+            <div class="calibration-point" data-index="8"></div>
+        </div>
+        <button id="skip-calibration" class="btn-skip">跳过校准</button>
+    </div>
+
+    <!-- 主界面 - 眼睛显示 -->
+    <div id="main-content" class="main-container hidden">
+        <!-- 控制按钮 -->
+        <div class="controls">
+            <button id="recalibrate-btn" class="control-btn">重新校准</button>
+            <button id="toggle-camera-btn" class="control-btn">隐藏摄像头</button>
+            <button id="toggle-debug-btn" class="control-btn">调试信息</button>
+        </div>
+
+        <!-- 眼睛容器 -->
+        <div class="eyes-container">
+            <!-- 左眼 -->
+            <div class="eye" id="left-eye">
+                <div class="eyeball">
+                    <div class="pupil" id="left-pupil">
+                        <div class="highlight"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右眼 -->
+            <div class="eye" id="right-eye">
+                <div class="eyeball">
+                    <div class="pupil" id="right-pupil">
+                        <div class="highlight"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 调试信息 -->
+        <div id="debug-info" class="debug-info hidden">
+            <h3>调试信息</h3>
+            <p>注视点: <span id="gaze-coords">-</span></p>
+            <p>瞳孔位置: <span id="pupil-coords">-</span></p>
+            <p>FPS: <span id="fps-counter">-</span></p>
+        </div>
+    </div>
+
+    <!-- 错误提示 -->
+    <div id="error-message" class="error-container hidden">
+        <div class="error-content">
+            <h2>⚠️ 出现错误</h2>
+            <p id="error-text"></p>
+            <button id="retry-btn" class="btn-retry">重试</button>
+        </div>
+    </div>
+
+    <!-- WebGazer.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/webgazer@2.0.1/dist/webgazer.js"></script>
+
+    <!-- 自定义脚本 -->
+    <script src="js/eye-controller.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

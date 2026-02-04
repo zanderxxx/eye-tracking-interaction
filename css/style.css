@@ -1,0 +1,423 @@
+/* ==================== 全局样式 ==================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #333;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ==================== 加载界面 ==================== */
+.loading-container {
+    text-align: center;
+    color: white;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-container p {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.loading-hint {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* ==================== 校准界面 ==================== */
+.calibration-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 1000;
+}
+
+.calibration-header {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    color: white;
+    z-index: 1001;
+}
+
+.calibration-header h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.calibration-header p {
+    font-size: 16px;
+    opacity: 0.9;
+    margin-bottom: 15px;
+}
+
+.calibration-progress {
+    font-size: 20px;
+    font-weight: bold;
+    color: #4ade80;
+}
+
+.calibration-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    padding: 20px;
+    gap: 20px;
+}
+
+.calibration-point {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.calibration-point::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    transition: transform 0.2s ease;
+}
+
+.calibration-point.active {
+    opacity: 1;
+}
+
+.calibration-point:hover::before {
+    transform: scale(1.3);
+}
+
+.calibration-point.clicked::before {
+    background: #4ade80;
+    animation: pulse 0.4s ease;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.5); }
+}
+
+.btn-skip {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 30px;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    color: white;
+    font-size: 16px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-skip:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: white;
+}
+
+/* ==================== 主界面 ==================== */
+.main-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* 控制按钮 */
+.controls {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+}
+
+.control-btn {
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    font-size: 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+/* 眼睛容器 */
+.eyes-container {
+    display: flex;
+    gap: 100px;
+    align-items: center;
+    justify-content: center;
+}
+
+.eye {
+    position: relative;
+    width: 200px;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.eyeball {
+    width: 160px;
+    height: 120px;
+    background: white;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, 0.2),
+        inset 0 2px 5px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pupil {
+    width: 50px;
+    height: 50px;
+    background: radial-gradient(circle at 30% 30%, #333, #000);
+    border-radius: 50%;
+    position: relative;
+    transition: transform 0.1s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.highlight {
+    width: 12px;
+    height: 12px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    opacity: 0.6;
+}
+
+/* 眨眼动画（可选） */
+@keyframes blink {
+    0%, 90%, 100% {
+        transform: scaleY(1);
+    }
+    95% {
+        transform: scaleY(0.1);
+    }
+}
+
+.eye.blinking .eyeball {
+    animation: blink 0.3s ease;
+}
+
+/* ==================== 调试信息 ==================== */
+.debug-info {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    min-width: 300px;
+}
+
+.debug-info h3 {
+    margin-bottom: 15px;
+    font-size: 16px;
+    color: #4ade80;
+}
+
+.debug-info p {
+    margin: 8px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.debug-info span {
+    color: #60a5fa;
+    font-weight: bold;
+}
+
+/* ==================== 错误提示 ==================== */
+.error-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.error-content {
+    text-align: center;
+    color: white;
+    max-width: 500px;
+    padding: 40px;
+}
+
+.error-content h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.error-content p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    opacity: 0.9;
+}
+
+.btn-retry {
+    padding: 12px 40px;
+    background: #ef4444;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-retry:hover {
+    background: #dc2626;
+    transform: scale(1.05);
+}
+
+/* ==================== WebGazer 摄像头预览调整 ==================== */
+#webgazerVideoContainer {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    width: 240px !important;
+    height: 180px !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3) !important;
+    z-index: 50 !important;
+}
+
+#webgazerVideoContainer.hidden {
+    display: none !important;
+}
+
+#webgazerVideoFeed {
+    border-radius: 10px !important;
+}
+
+/* 隐藏 WebGazer 的默认预测点 */
+#webgazerGazeDot {
+    display: none !important;
+}
+
+/* ==================== 响应式设计 ==================== */
+@media (max-width: 768px) {
+    .eyes-container {
+        gap: 50px;
+        flex-direction: column;
+    }
+
+    .eye {
+        width: 150px;
+        height: 105px;
+    }
+
+    .eyeball {
+        width: 120px;
+        height: 90px;
+    }
+
+    .controls {
+        top: 15px;
+        right: 15px;
+        flex-direction: column;
+    }
+
+    .debug-info {
+        bottom: 15px;
+        left: 15px;
+        font-size: 12px;
+        min-width: auto;
+    }
+
+    #webgazerVideoContainer {
+        width: 160px !important;
+        height: 120px !important;
+    }
+}
+
+/* ==================== 打印样式 ==================== */
+@media print {
+    body {
+        background: white;
+    }
+
+    .controls,
+    .debug-info,
+    #webgazerVideoContainer {
+        display: none !important;
+    }
+}
